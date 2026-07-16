@@ -18,8 +18,11 @@ Você decide **uma vez**, o time roda **de uma vez**, você revisa **uma vez**. 
 # 2. Definir o escopo (só escreve o arquivo — nada é executado)
 /briefing
 #    → responda até 4 perguntas (numa mensagem só)
+#    → respostas vagas não geram nova pergunta — viram "(assumido)",
+#      você corrige tudo de uma vez na aprovação
 #    → revise o checklist proposto
 #    → digite: aprovar briefing
+# atalho de 1 passo: /briefing <descreva a ideia> pula as perguntas
 
 # 3. Rodar tudo
 /loopteam:run
@@ -39,6 +42,7 @@ Perdido? `/loopteam:help` mostra o mapa em 3 frases.
 | Comando | O que faz | Quando usar |
 |---|---|---|
 | `/briefing` | Cria/edita `docs/BRIEFING.md` — a **única** sessão de perguntas. Nada executa aqui. | Início do projeto ou mudança de escopo |
+| `/briefing <descrição>` | Mesma coisa, mas pula as perguntas se você já contar a ideia. | Já sabe o que quer, quer 1 passo só |
 | `/loopteam:run` | Lê o BRIEFING e executa **todos** os itens abertos em lote, sem parar entre eles. **Modo padrão.** | Depois de "aprovar briefing" |
 | `/loopteam:start` | Executa **um** item e para para aprovação. | Item delicado, retomada de `[!]`, supervisão de perto |
 | `/loopteam <tarefa>` | Roda uma tarefa avulsa pelo processo completo, sem tocar no BRIEFING. | Pedido pontual fora do escopo |

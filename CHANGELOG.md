@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.5.1
+
+Patch — auditoria externa achou 2 vazamentos de pergunta:
+
+- `/briefing`: teto duro de 2 interações (ideal 1). Resposta vaga/incompleta nunca gera follow-up — vira "(assumido)" no checklist, corrigido na aprovação. Atalho `/briefing <descrição>`: contexto suficiente em `$ARGUMENTS` pula as perguntas direto pra proposta.
+- `loopteam-core` passo 1: empate real de roteamento em modo run não pergunta mais — escolhe o mais específico (ordem alfabética se empatar de novo), registra "roteado: X (empate assumido)" pro relatório final, veto via "reroteia: Y". Regra "Perguntar" reescrita literal: em run, só destrutivo executor e SIGNATURE global param; empate e 3ª falha não param mais o loop.
+- README: comando `/briefing <descrição>` na tabela; nota sobre respostas vagas não gerarem pergunta em "Primeiros 5 minutos".
+
 ## v0.5.0
 
 Modo RUN (one-shot) — feedback de campo: v0.4 segura mas friccionada, pergunta demais item por item. Concentra toda decisão humana na aprovação do briefing; travas C1/C2/C5 continuam, mas viram "resolver antes ou pular e reportar" em vez de "perguntar na hora":

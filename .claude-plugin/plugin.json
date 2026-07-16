@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "loopteam",
   "displayName": "LoopTeam",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Think more, spend less. Turns a Claude Code session into an internal dev team operating on verifiable loops: a Lead judges and routes, subagent Devs fan out on real work, chat stays code + proof.",
   "author": {
     "name": "Bruno Silva"
