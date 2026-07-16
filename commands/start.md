@@ -10,7 +10,7 @@ Carregue `loopteam-core`, `adapters`, `tool-capture` (e `verify-signature` se ho
 
 ## Pendências primeiro
 
-Sincronize `.loopteam/pending` com os itens `[?]` do BRIEFING (adiciona novo com contagem 1, incrementa existente, remove os que viraram `[x]`/`[ ]`). Se algum item tem contagem ≥3: liste ANTES de qualquer outra coisa, formato "[?] <item> (há N sessões)" — sem reverter `[?]` sozinho, nunca. Contagem <3: liste depois do bloco abaixo, mesma linha só com "pendente: N item(ns) [?]".
+Seção "Decisões Pendentes" do BRIEFING não vazia → 1 linha "decisões pendentes: N (edite o item ou remova pra liberar)" — nunca vira item executável sozinho. Sincronize `.loopteam/pending` com os itens `[?]` do BRIEFING (adiciona novo com contagem 1, incrementa existente, remove os que viraram `[x]`/`[ ]`). Se algum item tem contagem ≥3: liste ANTES de qualquer outra coisa, formato "[?] <item> (há N sessões)" — sem reverter `[?]` sozinho, nunca. Contagem <3: liste depois do bloco abaixo, mesma linha só com "pendente: N item(ns) [?]".
 
 ## Checks (gate já feito acima + fase, ≤3 linhas somadas)
 

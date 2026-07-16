@@ -1,6 +1,6 @@
 # BRIEFING
 
-Fonte de verdade do escopo deste projeto. O LoopTeam trabalha item por item. Nunca remover um item. Marcadores: `[ ]` aberto, `[x]` concluído e verificado, `[?]` aguardando o dono (guia manual de `mode: consultant`, ou critério com ambiente faltando, sem timeout), `[!]` falhou 3x e foi escalado — retome com `/loopteam:start`.
+Fonte de verdade do escopo deste projeto. O LoopTeam trabalha item por item. Nunca remover um item. Marcadores: `[ ]` aberto, `[x]` concluído e verificado, `[?]` aguardando o dono (guia manual de `mode: consultant`, ou critério com ambiente faltando, sem timeout), `[!]` falhou 3x e foi escalado — retome com `/loopteam:start`. Item cujo entregável é decisão do dono, não código, vive em "Decisões Pendentes", nunca em "Escopo" — nunca executa sozinho.
 
 ## Sobre o projeto
 
@@ -35,6 +35,17 @@ um comando que retorna X, um endpoint que responde Y. Nunca "funciona bem".
 -->
 
 - [ ] <item de exemplo — apague ao preencher> — pronto quando: <critério mensurável>
+
+## Decisões Pendentes
+
+<!--
+Item cujo entregável é uma decisão do dono, não código ("reavaliar tela X",
+"decidir se Y", "planejar Z" sem forma executável) NUNCA entra em "Escopo" —
+entra aqui. /loopteam:run e /loopteam:start listam esta seção (se não vazia)
+sem executar nada dela. Resolver = o dono edita o item pra forma executável
+(com critério mensurável, aí ele migra pra "Escopo") ou remove a linha.
+- [ ] <decisão a tomar>
+-->
 
 ## Fora de escopo
 

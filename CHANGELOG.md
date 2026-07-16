@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.6.0
+
+Campo rodada 2 — run inventou escopo estrutural sem regra ("partição por cluster") e `verify-signature` virou 8% do custo do plugin:
+
+- **Modo cluster oficial** (E1): lote `/loopteam:run` com >8 itens abertos pode particionar em até 3 agentes de cluster (teto duro), agrupados por área de código. Prova sempre por item, nunca por cluster. Cadeia `dep:` nunca cruza cluster. Item de decisão humana fica fora de qualquer cluster. Lead consolida e confirma antes de marcar estado no BRIEFING.
+- **verify-signature barata** (E2): carrega 1x por run (nunca por item/subagente); Lead extrai resumo operacional ≤10 linhas de `docs/SIGNATURE.md` e injeta nos agentes; skill completa só relida 1x, na consolidação final. `start`/ad-hoc continuam carregando inteira (item único não justifica compressão).
+- **Decisões Pendentes** (E3): item cujo entregável é decisão do dono ("reavaliar X", "decidir se Y") nunca entra em "Escopo" — vai pra nova seção "Decisões Pendentes" do BRIEFING, listada (não executada) em todo `run`/`start` até o dono resolver.
+- **Higiene reforçada** (E4): relatório final do `run` SEMPRE recomenda `/clear` quando o lote teve >5 itens — não mais condicional a "contexto pesado".
+
 ## v0.5.1
 
 Patch — auditoria externa achou 2 vazamentos de pergunta:
