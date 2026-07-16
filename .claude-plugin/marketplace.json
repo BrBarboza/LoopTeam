@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "loopteam",
+  "description": "Think more, spend less. Turns a Claude Code session into an internal dev team operating on verifiable loops.",
+  "owner": {
+    "name": "Bruno Silva"
+  },
+  "plugins": [
+    {
+      "name": "loopteam",
+      "description": "Time interno por loops verificáveis: Lead julga e roteia, Devs (subagentes) executam, chat só recebe código + prova.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
