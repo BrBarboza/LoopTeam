@@ -1,5 +1,5 @@
 ---
-description: Único ponto de entrada do LoopTeam — detecta fase do projeto, captura ferramentas, garante BRIEFING, começa pelo item de maior dependência.
+description: Modo supervisionado — executa UM item e para pra aprovação. Pra rodar todos os itens de uma vez, use /loopteam:run (padrão).
 disable-model-invocation: true
 argument-hint: "[item ou vazio]"
 ---
@@ -15,7 +15,7 @@ Sincronize `.loopteam/pending` com os itens `[?]` do BRIEFING (adiciona novo com
 ## Checks (gate já feito acima + fase, ≤3 linhas somadas)
 
 **Fase do projeto** (classifique 1 linha interna, nunca no chat, pelos sinais: nº arquivos de código, presença de teste, `.loopteam/` já existe, % `[x]` no BRIEFING):
-- **INÍCIO** (repo vazio/scaffold): sem `docs/BRIEFING.md` ainda → não ofereça só "criar"; mostre o mini-mapa: "1) `/briefing` cria o escopo (só escreve o arquivo, não executa nada). 2) `/loopteam:start` lê o BRIEFING e trabalha os itens. 3) `/loopteam:on`/`off` liga/desliga, `/loopteam <tarefa>` roda algo avulso." e instrua a rodar `/briefing` agora. Primeiro contato nunca termina em beco. Sem fan-out até existir base real.
+- **INÍCIO** (repo vazio/scaffold): sem `docs/BRIEFING.md` ainda → não ofereça só "criar"; mostre o mini-mapa: "1) `/briefing` cria o escopo (só escreve o arquivo, não executa nada). 2) `/loopteam:run` lê o BRIEFING e executa todos os itens de uma vez (padrão); `/loopteam:start` faz um item por vez, supervisionado. 3) `/loopteam:on`/`off` liga/desliga, `/loopteam <tarefa>` roda algo avulso." e instrua a rodar `/briefing` agora. Primeiro contato nunca termina em beco. Sem fan-out até existir base real.
 - **MEIO** (código real, sem LoopTeam prévio): rode `tool-capture` (aprovação 1-a-1 se `executor`, lote se `consultant`, ver `tool-capture`). Mapeie via `adapters` e proponha `docs/BRIEFING.md` rascunhado do código + entrevista curta de `briefing` pro que falta. UI presente → ofereça capturar `docs/SIGNATURE.md`, só grava com aprovação.
 - **FIM** (código maduro, `.loopteam/` já existia, ou BRIEFING quase todo `[x]`): manutenção — fan-out raro, verificação pesada.
 
@@ -23,7 +23,7 @@ Cada extensão em `.loopteam/extensions/<tool>/` com `template_version` diferent
 
 ## Selecionar item
 
-Argumento (`$ARGUMENTS`) → trate como o item; sem match exato, assuma o mais próximo em 1 linha. Sem argumento: se algum item tem `dep:`, ordene por dependência (item só entra depois do seu `dep:` estar `[x]`) e declare "ordem: dep" em 1 linha; nenhum item com `dep:` → heurística (bloqueador citado em Notas, senão 1º `[ ]` do arquivo) e declare "ordem: heurística". Tudo `[x]`/`[?]` → diga "BRIEFING completo" (+ pendências já listadas acima), pare.
+Argumento (`$ARGUMENTS`) → trate como o item; sem match exato, assuma o mais próximo em 1 linha. Argumento casando item `[!]` → retoma dali, contagem de falha reinicia (passo 2 em diante). Sem argumento: se algum item `[ ]` tem `dep:`, ordene por dependência (item só entra depois do seu `dep:` estar `[x]`) e declare "ordem: dep" em 1 linha; nenhum item com `dep:` → heurística (bloqueador citado em Notas, senão 1º `[ ]` do arquivo) e declare "ordem: heurística". Tudo `[x]`/`[?]`/`[!]` sem alvo específico → diga "BRIEFING completo" (+ pendências já listadas acima, `[!]` incluso), pare.
 
 ## Executar
 

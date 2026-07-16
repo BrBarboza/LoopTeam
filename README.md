@@ -1,165 +1,136 @@
 # LoopTeam
 
-**Think more, spend less.**
+> **Think more, spend less.**
 
-LoopTeam transforma qualquer sessão do Claude Code em um time de desenvolvimento interno: um Lead que julga, roteia e revisa; Devs que são subagentes concorrentes disparados em fan-out (1 a 3, conforme incerteza real); e extensões de domínio geradas a partir do que o SEU projeto realmente usa — nada de Supabase/n8n fixo no núcleo. O caro julga. O barato executa. O chat só vê código e prova.
+Um plugin de Claude Code que transforma sua sessão em um **time de desenvolvimento interno**: um Lead que julga, subagentes que implementam em paralelo, e loops de verificação que só fecham item com prova. Toda a deliberação acontece em silêncio — no chat você recebe **código + prova**, nada de "pensando alto".
 
-Fonte de verdade em arquivo, não em memória de conversa: `docs/BRIEFING.md` é o escopo em checklist.
+Você decide **uma vez**, o time roda **de uma vez**, você revisa **uma vez**. Três toques por ciclo.
+
+---
 
 ## Primeiros 5 minutos
 
 ```
-/plugin marketplace add {{user}}/loopteam
+# 1. Instalar (dentro do Claude Code, em qualquer projeto)
+/plugin marketplace add {{seu-user}}/loopteam
 /plugin install loopteam@loopteam
+
+# 2. Definir o escopo (só escreve o arquivo — nada é executado)
+/briefing
+#    → responda até 4 perguntas (numa mensagem só)
+#    → revise o checklist proposto
+#    → digite: aprovar briefing
+
+# 3. Rodar tudo
+/loopteam:run
+#    → executa todos os itens em sequência, sem te interromper
+#    → no fim: relatório de 1 linha por item
+
+# 4. Revisar
+#    "Aprovar tudo" · "revisar item N" · "descartar item N"
 ```
 
-```
-install → /briefing (até 4 perguntas sobre a IDEIA)
-        → você responde
-        → "aprovar briefing" (nada executa antes disso)
-        → /loopteam:start (trabalha os itens, um por vez)
-        → você responde: aprovar / ajustar / descartar
-```
+Perdido? `/loopteam:help` mostra o mapa em 3 frases.
 
-Perdido? `/loopteam:help` mostra o mapa em 3 frases. Detalhes técnicos ficam no resto deste README.
+---
+
+## Os comandos
+
+| Comando | O que faz | Quando usar |
+|---|---|---|
+| `/briefing` | Cria/edita `docs/BRIEFING.md` — a **única** sessão de perguntas. Nada executa aqui. | Início do projeto ou mudança de escopo |
+| `/loopteam:run` | Lê o BRIEFING e executa **todos** os itens abertos em lote, sem parar entre eles. **Modo padrão.** | Depois de "aprovar briefing" |
+| `/loopteam:start` | Executa **um** item e para para aprovação. | Item delicado, retomada de `[!]`, supervisão de perto |
+| `/loopteam <tarefa>` | Roda uma tarefa avulsa pelo processo completo, sem tocar no BRIEFING. | Pedido pontual fora do escopo |
+| `/loopteam:on` / `off` | Liga/desliga o LoopTeam na pasta. `off` = Claude age normal. | Quando quiser a sessão "crua" |
+| `/loopteam:help` | Mapa mental em 3 frases + esta tabela. | Sempre que esquecer o fluxo |
+
+**A dúvida clássica:** `/briefing` **escreve** o escopo; `/loopteam:run` (ou `start`) é quem **lê e executa**.
+
+---
 
 ## Como funciona
 
-Lead julga e roteia, nunca coda rotina. `docs/BRIEFING.md` é o escopo; cada item vira código verificado por um roteiro de 7 passos (memória → mapear → executar → julgar → verificar → falhar se preciso → registrar). Fan-out de 1-3 subagentes só quando o item é grande e a incerteza é real. Extensão de domínio (Supabase, n8n, o que seu projeto usar) é capturada do ambiente, nunca fixa no núcleo. Chat só recebe código e prova — o resto é silencioso.
-
-## Fluxo
-
 ```
-/loopteam:start
-      │
-      ▼
-gate .loopteam/state ── "off"? dormente, pare. "on"/ausente? segue
-      │
-      ▼
-fase do projeto: INÍCIO (sem base) / MEIO (código sem LoopTeam) / FIM (maduro)
-      │
-      ├─ INÍCIO ── entrevista /briefing (4 perguntas, só a IDEIA)
-      ├─ MEIO   ── tool-capture (detecta MCP/CLI/deps → gera .loopteam/extensions/<tool>/SKILL.md,
-      │            pede OK em lote) + rascunha BRIEFING a partir do código + entrevista curta
-      └─ FIM    ── modo manutenção: fan-out raro, verificação pesada
-      │
-      ▼
-lista pendências [?] em 1 linha, se houver
-      │
-      ▼
-pega item de maior dependência (ou 1º [ ] aberto)
-      │
-      ▼
-0.memória → 1.mapear (+ roteia extensão, empate por especificidade)
-      │
-      ▼
-2.executar por porte: 1-2 arquivos = direto · 3+/feature = fan-out 1-3 subagentes
-                       (1=óbvio · 2=trade-off claro · 3=incerteza real)
-      │
-      ▼
-3.julgar (silencioso) → 4.verificar (até 5 tentativas) → 5.falha se houver
-      │
-      ▼
-6.registrar: [x] (ou [?] se mode:consultant sem "funcionou") + memória
-      │
-      ▼
-ENTREGA ≤8 linhas: código → prova → [x]/[?] → roteado → próximo passo
-      │
-      ▼
-dono: aprovar / ajustar / descartar / reroteia: X / funcionou / continua o briefing
+docs/BRIEFING.md ──► Lead lê UMA vez ──► por item:
+   (checklist            │                 porte pequeno → edita direto
+   aprovado)             │                 porte grande  → 1-3 subagentes concorrentes
+                         │                 julga em silêncio → aplica a melhor
+                         ▼                 verifica (critério mensurável, até 5x)
+                  relatório final:        [x] provado · [?] aguarda você/ambiente · [!] travou 3x
+                  1 linha por item
 ```
 
-## Comandos
+- **Caro julga, barato executa**: modelo forte só para decisão e review; rotina vai para o mais barato.
+- **Fan-out por incerteza**: 1 subagente se o caminho é óbvio, 2 se há trade-off, 3 se há incerteza real. Nunca paralelismo por vaidade.
+- **Prova honesta**: todo item declara o tipo de prova — `executada` (testes/build rodaram) ou `estática` (leitura/grep). Prova estática **nunca** fecha um item como `[x]`.
+- **Escopo é lei**: o time executa o **texto** do item, nada além. Ideias extras viram sugestão no relatório, não código surpresa.
+- **Só interrompe você por 2 motivos**: operação destrutiva (DROP, DELETE, dinheiro) ou conflito global com sua identidade visual. Todo o resto: decide, registra, segue.
 
-| Comando | O que faz |
-|---|---|
-| `/loopteam:start` | Ponto de entrada único — gate, fase do projeto, captura de ferramentas, garante BRIEFING, executa o item de maior dependência. |
-| `/loopteam:on` | Ativa o LoopTeam neste projeto (`.loopteam/state` = `on`). Padrão após install. |
-| `/loopteam:off` | Desativa — Claude age normal até o próximo `on`. Bloqueia inclusive `/loopteam:start` e `/loopteam`. |
-| `/loopteam <tarefa>` | Modo ad-hoc — roda UMA tarefa avulsa pelo roteiro completo, sem tocar o BRIEFING. Também respeita o gate `off`. |
-| `/briefing` | Cria/continua `docs/BRIEFING.md` — só aqui o time ainda conversa livremente, porque não há código pra entregar ainda. Proposta: nada executa até "aprovar briefing". |
-| `/loopteam:help` | Mapa mental em 3 frases + esta tabela, direto no chat. |
+### Estados dos itens
 
-## Sessão nova é barata
+| Estado | Significa | Quem resolve |
+|---|---|---|
+| `[ ]` | Aberto | O próximo run |
+| `[x]` | Fechado com prova executada | Ninguém — está pronto |
+| `[?]` | Aguardando você (guia manual, ambiente faltando) | Você — o `start`/`run` lembra a cada sessão |
+| `[!]` | Falhou 3 vezes, escalado com diagnóstico | Você decide a saída; retome com `/loopteam:start` |
 
-Estado do LoopTeam é 100% arquivo — `.loopteam/` + `docs/BRIEFING.md` — nunca memória de conversa. Depois de 1-2 itens fechados, `/clear` e `/loopteam:start` de novo é o modo recomendado: nada se perde, e a sessão não estoura contexto. O próprio `loopteam-core` sugere isso quando a sessão já está longa.
+---
 
-## Exemplo de BRIEFING preenchido
+## Captura de ferramentas (zero domínio hardcoded)
 
-```markdown
-# BRIEFING
+No primeiro run, o LoopTeam detecta o que **seu projeto** realmente usa — MCPs conectados, CLIs, dependências — e gera uma extensão de domínio para cada ferramenta relevante em `.loopteam/extensions/<tool>/`, com:
 
-## Sobre o projeto
+- `mode: executor` (o time opera direto — ex.: banco via MCP/migrations) ou `mode: consultant` (você opera manualmente — ex.: automações que você aplica num editor externo; o time entrega guia passo a passo);
+- **trava destrutiva** do domínio (o que nunca roda sem seu OK);
+- critério de verificação próprio.
 
-App de gestão de tarefas para times pequenos. Web app, backend em Supabase,
-notificações automatizadas via n8n.
+Extensões `executor` são aprovadas **uma a uma**, com a trava exibida na íntegra. `consultant`, em lote. Extensão sem aprovação fica gravada mas **não roteia**. Exemplos reais do output esperado em `examples/captured/` (Supabase como executor, n8n como consultant).
 
-## Escopo
+## Assinatura visual (opcional)
 
-- [x] Tela de login com e-mail e senha — pronto quando: usuário existente
-      consegue entrar e é redirecionado para /dashboard; teste E2E de login passa.
-- [x] [supabase] Tabela de tarefas com RLS — pronto quando: migration aplicada,
-      cada usuário só vê e edita as próprias tarefas (smoke test de RLS passa).
-- [ ] Listagem de tarefas com filtro por status — pronto quando: filtro
-      "pendente/concluída/todas" retorna o conjunto certo em teste unitário.
-      dep: Tabela de tarefas com RLS
-- [?] [n8n] Notificação por e-mail quando tarefa vence — pronto quando: dono
-      confirma manualmente que recebeu o e-mail de teste (aguardando "funcionou").
-- [ ] Exportar tarefas em CSV — pronto quando: arquivo baixado abre no Excel
-      com as colunas esperadas e os dados batendo com o banco.
-      dep: Listagem de tarefas com filtro por status
+Tem um padrão de UI que todo projeto seu segue (posição de FAB, nav bar, cores, raios)? Descreva uma vez em `docs/SIGNATURE.md` (template incluso — ou deixe o `/briefing` capturá-lo do código existente). Todo item que toca UI é verificado contra ele. Plugins de design instalados (frontend-design, ui-ux-pro-max) cuidam da qualidade geral; o LoopTeam audita **a sua** assinatura.
 
-## Fora de escopo
+Precedência em conflito: `BRIEFING > SIGNATURE > código existente` — exceção pontual passa com 1 linha; mudança de identidade inteira para e pergunta.
 
-Multi-idioma e app mobile nativo — só web, só português, nesta v1.
+---
 
-## Notas
+## Sessão nova é barata (leia isto)
 
-Prioridade é login + tarefas antes de notificação — n8n pode esperar a v2 se o
-prazo apertar.
+O estado do LoopTeam vive **100% em arquivos** (`docs/BRIEFING.md`, `.loopteam/`). A sessão é descartável:
+
+- Contexto acumulado é o maior custo real de sessões longas — não a execução.
+- A cada 2-3 itens fechados, o run avisa quando vale: `/clear` → `/loopteam:run` **continua exatamente de onde parou**.
+- Regra de bolso: sessão nova por bloco de trabalho = modo barato de operar.
+
+O plugin em si carrega ~46 linhas de núcleo + skills sob demanda — custo fixo mínimo por turno, medido e registrado em `docs/JUDGING.md` a cada versão.
+
+---
+
+## Estrutura que o LoopTeam cria no seu projeto
+
 ```
-
-## Respostas do dono
-
-Depois de cada entrega, o LoopTeam só pergunta "Aprovar, ajustar ou descartar?". Respostas que ele entende:
-
-| Resposta | O que acontece |
-|---|---|
-| **aprovar** | Item fica `[x]`, time segue para o próximo. |
-| **ajustar** | Reabre só o loop de verificação (passo 4) — não recomeça do zero. |
-| **descartar** | Desmarca `[x]`/`[?]` de volta para `[ ]`, registra o motivo em `.loopteam/memory/DECISIONS.md`. |
-| **reroteia: X** | Veta o roteamento semântico automático e manda o item para a extensão `X`. |
-| **funcionou** | Fecha `[?]` → `[x]` em item de extensão `mode: consultant` — o time não pode verificar sozinho o que só o dono aplica manualmente. Sem timeout. |
-| **continua o briefing** | Trata a mensagem seguinte como escopo novo, não como resposta às 3 opções. |
-
-## Extensões de domínio — capturadas, não hardcoded
-
-O núcleo não conhece nome de ferramenta nenhuma. A skill `tool-capture` detecta o que o SEU projeto usa (MCP conectado, CLI no PATH, dependências) e gera `.loopteam/extensions/<tool>/SKILL.md` a partir de `extensions/_TEMPLATE/SKILL.md` — sempre dentro do seu projeto, nunca no plugin. Aprovação: `mode: executor` é 1-a-1, com a trava destrutiva gerada mostrada verbatim antes do OK; `mode: consultant` é em lote, 1 linha cada. Cada extensão grava o `template_version` do `_TEMPLATE` que a gerou — `/loopteam:start` avisa em 1 linha se ficou desatualizada.
-
-`examples/captured/` mostra o output esperado de uma captura real (Supabase → `mode: executor`, n8n → `mode: consultant`) — referência de forma, não algo que o plugin carrega.
-
-Pra escrever uma extensão à mão em vez de esperar a captura automática, copie `extensions/_TEMPLATE/SKILL.md` direto pro mesmo destino (`.loopteam/extensions/<tool>/SKILL.md`).
-
-## Ferramentas externas (opcionais)
-
-Nada aqui é obrigatório. `rtk`, `graphify` e `ruflo`, se detectados, viram upgrade de tokens/contexto/orquestração — sem eles, cai em `Grep`/`Glob`, `Task`/`Agent`, e `.loopteam/memory/DECISIONS.md`. Ver `skills/adapters/SKILL.md`. Plugin `caveman` instalado? LoopTeam compõe com ele em vez de duplicar regra de estilo.
+docs/BRIEFING.md          # escopo: checklist com critérios, dep:, estados
+docs/SIGNATURE.md         # (opcional) seu padrão visual
+.loopteam/
+├── state                 # on/off
+├── extensions/<tool>/    # extensões capturadas do SEU projeto
+└── memory/DECISIONS.md   # decisões e falhas — nunca repete abordagem que já falhou
+```
 
 ## FAQ
 
-**Preciso ter um repositório git?** Não é exigido, mas recomendado — `docs/BRIEFING.md` e `.loopteam/` são texto simples versionável.
+**O run fez algo que eu não queria.** Responda `revisar item N` ou `descartar item N` no relatório — descarte registra o motivo na memória e a abordagem não se repete. Escopo extra nunca vira código sem estar no BRIEFING.
 
-**O LoopTeam chama API externa por conta própria?** Não. Só usa o que já está instalado (detectado, nunca instalado sozinho).
+**Por que ele não me mostra as alternativas que os subagentes geraram?** Você pagaria 3x o output para ler propostas que o Lead já julgou. O trade-off relevante (quando existe) vem em 1 linha; o resto está na memória.
 
-**É um framework multiagente separado?** Não — usa `Task`/`Agent` nativo do Claude Code. `ruflo` é upgrade opcional de orquestração.
+**Quero acompanhar de perto um item específico.** `/loopteam:start` — um item, para, pergunta.
 
-**Quantos subagentes o fan-out dispara?** 1 a 3, nunca fixo — o Lead decide pela incerteza real do item (1 = caminho óbvio, 3 = incerteza genuína).
+**Funciona sem nenhuma ferramenta extra instalada?** Sim — 100% vanilla. rtk, graphify, ruflo, caveman e afins são detectados como aceleradores se existirem, nunca exigidos.
 
-**Como funciona o loop de verificação?** Até 5 tentativas por item: 1ª falha aplica a 2ª melhor solução, 2ª falha exige abordagem nova, 3ª falha para o time e escala em 3 linhas. Nunca 4ª tentativa sem aprovação.
+**O BRIEFING mudou no meio do caminho.** Edite o arquivo, digite `continua o briefing` — itens novos entram na fila, `[x]` nunca some (o checklist é escopo, progresso e histórico).
 
-**E se eu não tiver nenhuma ferramenta opcional?** Funciona igual — 100% vanilla é o caminho padrão testado, não um caso degradado.
+---
 
-**`/loopteam:off` bloqueia mesmo o modo ad-hoc?** Sim — `off` é checado 2x (no comando e no core), sem exceção pra `/loopteam <tarefa>`. Só `/loopteam:on` reativa.
-
-**Item `[?]` esquecido pra sempre?** Não some — `/loopteam:start` conta sessões e, com 3 ou mais sem "funcionou", abre a saída do start com ele. Nunca reverte `[?]` sozinho.
-
-**Licença?** MIT — ver `LICENSE`.
+MIT · Feito com a lógica de "pensar mais para gastar menos": deliberação interna densa, chat enxuto, prova sempre.

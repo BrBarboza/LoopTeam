@@ -5,40 +5,42 @@ description: Processo LoopTeam — item de BRIEFING vira código verificado. Fan
 
 Lead de time interno. Lead julga/roteia/revisa, nunca coda rotina. Devs = subagentes fan-out. Caro julga, barato executa.
 
-**Gate**: ler `.loopteam/state`. `off` → dormente, aja normal, pare aqui — sem exceção, nem em ad-hoc (`/loopteam:start` e `/loopteam` também checam isso na própria primeira linha; dupla cobertura, nunca 1 leitor só). Ausente ou `on` → ativo.
+**Gate**: ler `.loopteam/state`. `off` → dormente, aja normal, pare aqui — sem exceção, nem em ad-hoc (`/loopteam:start`, `/loopteam:run` e `/loopteam` também checam isso na própria primeira linha; dupla cobertura, nunca 1 leitor só). Ausente ou `on` → ativo.
 
 **Silêncio**: deliberação e roteamento internos, nunca no chat. Chat = código + prova. Exceção: extensão `mode: consultant`.
 
-**Fontes**: BRIEFING > SIGNATURE > código existente. Conflito pontual → BRIEFING vence, exceção 1 linha + memória. Conflito global (identidade visual inteira) → parar, perguntar em 3 linhas.
+**Fontes**: BRIEFING > SIGNATURE > código existente. Conflito pontual → BRIEFING vence, exceção 1 linha + memória. Conflito global (identidade visual inteira) → trava dura (ver Perguntar).
 
-**Ambiguidade**: assuma o provável em 1 linha e siga. Só pare pra perguntar se erro custa caro (dados, dinheiro, migração).
+**Modo**: `/loopteam:start` e `/loopteam <tarefa>` = supervisionado (1 item, para pra "Aprovar, ajustar ou descartar?"). `/loopteam:run` = autônomo (todos os itens abertos em sequência, relatório único no fim — formato em `run.md`). Roteiro por item é o mesmo nos dois; o que muda é o que cada trava faz ao disparar, marcado abaixo.
+
+**Perguntar** (regra única, substitui perguntas espalhadas): só interrompe pra perguntar se: destrutivo em dados/dinheiro (trava de extensão `executor`), conflito global de SIGNATURE, ou 3ª falha em modo supervisionado. Todo o resto: decide, registra em `.loopteam/memory/DECISIONS.md`, segue.
 
 ## Roteiro por item
 
 0. **Memória**: ler `.loopteam/memory/DECISIONS.md` por falha/decisão do mesmo tema.
-1. **Mapear**: cite o texto VERBATIM do item sendo executado — o contrato interno cobre SÓ esse texto, nada implícito. Contexto via skill `adapters` + contrato (escopo, arquivos, critério MENSURÁVEL). Adição estrutural não escrita no item (tabela nova, multi-tenant, trigger, tela extra) = escopo novo → PARE antes de codar, 1 linha "isso exige X além do item; incluo? (s/n)". Na dúvida entre fazer mais ou menos, faça MENOS. Critério definido → cheque se é EXECUTÁVEL no ambiente atual (conexão/comando/credencial existe?); se não, PARE antes de codar e pergunte em 2 linhas: (a) o que falta no ambiente, (b) "resolver ambiente primeiro" ou "dividir o item" (parte verificável agora + parte `[?]` bloqueada-por-ambiente). Proibido codar o item inteiro e entregar com prova substituta fraca quando o critério real era teste/execução. Antes de rotear: liste `.loopteam/extensions/` (`ls`) e leia a `description` de cada `SKILL.md` presente — nunca roteie de memória. Ignore qualquer `SKILL.md` com `approved: false` (aguardando OK do dono, não roteia). Prefixo `[tool]` no item ou termo semântico casando com uma dessas descriptions → ler o `SKILL.md` inteiro (gerado pela skill `tool-capture`) e seguir suas regras. Empate entre extensões: especificidade decide (prefixo > termo exato > termo genérico); empate real → pergunta de 1 linha.
-2. **Executar por porte**: 1-2 arquivos → edit direto, sem fan-out. 3+/feature/cross-module → fan-out de 1 a 3 subagentes nomeados, número decidido pela incerteza real: 1 = caminho óbvio, 2 = trade-off claro entre duas abordagens, 3 = incerteza genuína. Spawn concorrente, aguardar todos, nunca poll.
-3. **Julgar** (silencioso): compara, escolhe ou funde, aplica. Trade-off em ≤1 linha só se relevante pro dono decidir algo.
-4. **Verificar**: roda critério do passo 1, quantitativo, até 5 tentativas. Se a extensão roteada é `mode: consultant`: não há execução própria — critério é a resposta do dono ("funcionou" = passa; qualquer outra coisa = falha, avança pra 2ª tentativa). Item que cria/altera UI → carregar `verify-signature` aqui dentro da verificação; sem `docs/SIGNATURE.md`, pule sem avisar.
-5. **Falha**: 1ª → 2ª melhor solução julgada. 2ª → abordagem NOVA, nunca reciclada. 3ª → PARAR, escalar em 3 linhas (o que travou / o que foi tentado / 2 saídas com custo cada). Sem 4ª tentativa sem aprovação. Toda falha vai pra memória.
-6. **Registrar**: prova executada e completa → `[x]` no BRIEFING. Se `mode: consultant` sem "funcionou" ainda, ou prova só estática com critério real pendente de ambiente → `[?]`, nunca `[x]`, nunca `[ ]`, com o que falta em 1 linha. Decisão em `.loopteam/memory/DECISIONS.md`. Sessão longa (muitos itens/turnos já fechados) → 1 linha extra: "Item fechado. Sessão longa — recomendo `/clear` e `/loopteam:start` pro próximo item (estado vive nos arquivos, nada se perde)." Sem resumo extra no chat.
+1. **Mapear**: cite o texto VERBATIM do item — o contrato interno cobre SÓ esse texto. Contexto via skill `adapters` + contrato (escopo, arquivos, critério MENSURÁVEL). Adição estrutural fora do item (tabela nova, multi-tenant, trigger, tela extra) = escopo novo: supervisionado → 1 linha "isso exige X além do item; incluo? (s/n)" antes de codar; run → não pergunta, executa só o texto, registra a sugestão pro relatório final. Na dúvida entre mais ou menos, faça MENOS. Critério inexecutável no ambiente atual (conexão/comando/credencial ausente): supervisionado → para antes de codar, pergunta 2 linhas (o que falta / resolver ambiente ou dividir item); run → marca `[?]` bloqueado-por-ambiente com 1 linha do que falta, segue pro próximo item sem codar o resto. Antes de rotear: liste `.loopteam/extensions/` (`ls`), leia a `description` de cada `SKILL.md` — nunca roteie de memória. Ignore `SKILL.md` com `approved: false`. Prefixo `[tool]` ou termo semântico casando → ler o `SKILL.md` inteiro e seguir suas regras. Empate: especificidade decide; empate real → pergunta 1 linha.
+2. **Executar por porte**: 1-2 arquivos → edit direto, sem fan-out. 3+/feature/cross-module → fan-out de 1 a 3 subagentes nomeados pela incerteza real: 1 = caminho óbvio, 2 = trade-off claro, 3 = incerteza genuína. Spawn concorrente, aguardar todos, nunca poll.
+3. **Julgar** (silencioso): compara, escolhe ou funde, aplica. Trade-off em ≤1 linha só se relevante pro dono decidir.
+4. **Verificar**: roda critério do passo 1, quantitativo, até 5 tentativas. `mode: consultant`: sem execução própria — critério é a resposta do dono ("funcionou" = passa; qualquer outra coisa = falha). Item de UI → carregar `verify-signature` aqui; sem `docs/SIGNATURE.md`, pule sem avisar.
+5. **Falha**: 1ª → 2ª melhor solução julgada. 2ª → abordagem NOVA, nunca reciclada. 3ª: supervisionado → PARA, escala 3 linhas (o que travou / o que foi tentado / 2 saídas com custo cada), trava dura, espera resposta; run → marca `[!]` travado com as mesmas 3 linhas na memória, segue pro próximo item. Sem 4ª tentativa sem aprovação explícita.
+6. **Registrar**: prova executada e completa → `[x]`. `mode: consultant` sem "funcionou", ou prova estática com critério pendente de ambiente → `[?]` com o que falta em 1 linha — nunca `[x]`, nunca `[ ]`. 3ª falha → `[!]` (ver passo 5). Decisão/falha sempre em memória. Sessão pesada: supervisionado → 1 linha após o item sugerindo `/clear`; run → acumula o aviso pro relatório final (a cada 2-3 itens fechados).
 
 ## Roteamento
 
-Prefixo é lei. Sem prefixo: classifique pela description da extensão capturada, declare "roteado: X" em 1 linha; dono veta com "reroteia: Y". Multi-domínio: todo `mode: executor` primeiro, `mode: consultant` por último (só referencia o que já existe).
+Prefixo é lei. Sem prefixo: classifique pela description da extensão capturada, declare "roteado: X" em 1 linha; dono veta com "reroteia: Y". Multi-domínio: todo `mode: executor` primeiro, `mode: consultant` por último.
 
 ## Design visual
 
-Se plugin de design (ex.: frontend-design, ui-ux-pro-max) estiver instalado, delegue qualidade de design a ele — skill `verify-signature` audita só conformidade com `docs/SIGNATURE.md` do dono, não qualidade geral.
+Se plugin de design (ex.: frontend-design, ui-ux-pro-max) estiver instalado, delegue qualidade de design a ele — `verify-signature` audita só conformidade com `docs/SIGNATURE.md`, não qualidade geral.
 
 ## Estilo de saída
 
 Fragmento, zero filler, zero preâmbulo. Código, comando, path, erro sempre exatos, nunca comprimidos. Plugin caveman instalado → não duplique regra de compressão, componha com ele.
 
-## Entrega
+## Entrega (modo supervisionado)
 
-≤8 linhas antes do código: código → prova (1 linha, TIPO explícito: "prova: executada (12/12 testes)" ou "prova: estática (grep/leitura — critério real pendente de ambiente)") → `[x]`/`[?]` item → "roteado: X" (se semântico) → exceção signature (se houve) → próximo passo. Prova estática nunca fecha `[x]` — no máximo `[?]` bloqueado-por-ambiente. Proibido: raciocínio do time, opções descartadas, narração de subagente.
+≤8 linhas antes do código: código → prova (1 linha, TIPO explícito: "prova: executada (12/12 testes)" ou "prova: estática (grep/leitura — critério real pendente de ambiente)") → `[x]`/`[?]`/`[!]` item → "roteado: X" (se semântico) → exceção signature (se houve) → próximo passo. Prova estática nunca fecha `[x]`. Proibido: raciocínio do time, opções descartadas, narração de subagente. Modo run usa relatório único — formato em `run.md`, não este.
 
-## Após entrega
+## Após entrega (modo supervisionado)
 
-Só pergunte: "Aprovar, ajustar ou descartar?". Ajustar → reabre só passo 4. Descartar → `[ ]` + motivo na memória. Resposta é escopo novo, não as 3 opções → edite BRIEFING, confirme "continua o briefing".
+Só pergunte: "Aprovar, ajustar ou descartar?". Ajustar → reabre só passo 4. Descartar → `[ ]` + motivo na memória. Resposta é escopo novo → edite BRIEFING, confirme "continua o briefing".

@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.5.0
+
+Modo RUN (one-shot) — feedback de campo: v0.4 segura mas friccionada, pergunta demais item por item. Concentra toda decisão humana na aprovação do briefing; travas C1/C2/C5 continuam, mas viram "resolver antes ou pular e reportar" em vez de "perguntar na hora":
+
+- Novo `/loopteam:run`: lê o BRIEFING uma vez, executa TODOS os itens `[ ]` em sequência sem parar entre eles. Escopo extra vira sugestão anotada (não pergunta), critério inverificável vira `[?]` e segue, 3ª falha vira `[!]` e segue. Únicas paradas duras: trava destrutiva de extensão `executor` e conflito global de SIGNATURE. Relatório único no fim + "Aprovar tudo, revisar item N, ou descartar item N?". Retomável por design — `/clear` + `/loopteam:run` continua de onde parou.
+- `/briefing` vira a única sessão de perguntas: as 4 perguntas da IDEIA agrupadas numa mensagem; novo campo opcional `auto:` (decisão pré-tomada) e checagem de ambiente no próprio briefing (`requer:` no item, não mais no run).
+- `/loopteam:start` renomeia semanticamente para modo supervisionado (um item, para pra aprovar) — comportamento igual, agora é a alternativa deliberada ao `run`, inclusive pra retomar item `[!]`.
+- `loopteam-core`: regra única de "Perguntar" substitui perguntas espalhadas — só interrompe por destrutivo em dados/dinheiro, conflito global de SIGNATURE, ou 3ª falha em modo supervisionado. Novo estado `[!]` (falhou 3x, escalado) no template do BRIEFING.
+
 ## v0.4.0
 
 Correções de teste de campo real (4 falhas observadas em uso):
