@@ -4,9 +4,11 @@ disable-model-invocation: true
 argument-hint: "[item ou vazio]"
 ---
 
-**Gate (1ª linha, antes de tudo)**: leia `.loopteam/state`. `off` → responda exatamente "loopteam off — use `/loopteam:on`" e PARE, nada mais roda. Ausente/`on` → declare em 1 linha o que este comando vai fazer (ex.: "Lendo docs/BRIEFING.md — N itens abertos, começando por...") e segue. Cobertura dupla com o gate de `loopteam-core` — não pule por já ter sido checado antes.
+**Gate (1ª linha, antes de tudo)**: leia `.loopteam/state`. `off` → responda exatamente "loopteam off — use `/loopteam:on`" e PARE, nada mais roda. Ausente/`on` → leia a versão em `.claude-plugin/plugin.json` e declare em 1 linha o que este comando vai fazer, versão inclusa (ex.: "LoopTeam vX.Y.Z — lendo docs/BRIEFING.md — N itens abertos, começando por...") e segue. Cobertura dupla com o gate de `loopteam-core` — não pule por já ter sido checado antes.
 
 Carregue `loopteam-core`, `adapters`, `tool-capture` (e `verify-signature` se houver UI no escopo).
+
+Existe skill local em `.claude/skills/` com nome igual/equivalente a uma skill do plugin (`loopteam-core`, `adapters`, `tool-capture`, `verify-signature`) → avise em 1 linha "skill local 'X' duplica a do plugin — remova para não pagar 2x" e use APENAS a versão do plugin nesta execução.
 
 ## Pendências primeiro
 

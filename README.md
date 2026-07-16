@@ -35,6 +35,8 @@ Você decide **uma vez**, o time roda **de uma vez**, você revisa **uma vez**. 
 
 Perdido? `/loopteam:help` mostra o mapa em 3 frases.
 
+Alterou o plugin? `git push` no repo do loopteam → `/plugin update` → `/reload-plugins` — sem push, o update não vê nada.
+
 ---
 
 ## Os comandos

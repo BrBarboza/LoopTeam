@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.6.2
+
+Campo rodada 3, patch — 3 achados:
+
+- **Recuperação de agente mudo** (H1): `run.md` Cluster — agente "finished" sem reporte não bloqueia mais o run. 1 pedido de status sem resposta → Lead consolida direto do filesystem (`git status`/`git diff` do cluster), verifica item a item contra o critério, anota "cluster X: consolidado via filesystem (agente não reportou)".
+- **Eco de versão** (H2): `run.md`/`start.md` — 1ª linha do gate agora inclui a versão do plugin ("LoopTeam vX.Y.Z — lendo docs/BRIEFING.md..."), lida de `.claude-plugin/plugin.json`. README ganha nota: alterar o plugin exige `git push` no repo antes de `/plugin update` + `/reload-plugins`.
+- **Detecção de skill sombra** (H3): `run.md`/`start.md`, no setup — skill local em `.claude/skills/` com nome igual/equivalente a skill do plugin gera aviso 1 linha ("skill local 'X' duplica a do plugin — remova para não pagar 2x") e só a versão do plugin roda nessa execução.
+
 ## v0.6.1
 
 Campo rodada 2, patch — 3 achados:

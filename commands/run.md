@@ -4,9 +4,11 @@ disable-model-invocation: true
 argument-hint: "[vazio]"
 ---
 
-**Gate (1ª linha)**: leia `.loopteam/state`. `off` → "loopteam off — use `/loopteam:on`", PARE. Ausente/`on` → declare em 1 linha o que vai fazer ("Lendo docs/BRIEFING.md — N itens abertos, rodando em sequência...") e segue.
+**Gate (1ª linha)**: leia `.loopteam/state`. `off` → "loopteam off — use `/loopteam:on`", PARE. Ausente/`on` → leia a versão em `.claude-plugin/plugin.json` e declare em 1 linha o que vai fazer, versão inclusa ("LoopTeam vX.Y.Z — lendo docs/BRIEFING.md — N itens abertos, rodando em sequência...") e segue.
 
 Carregue `loopteam-core` em **modo run**, `adapters`, `tool-capture`. Sem `docs/BRIEFING.md` ainda → mesmo mini-mapa do `/loopteam:start` (3 frases) + instrua `/briefing`. Seção "Decisões Pendentes" do BRIEFING não vazia → 1 linha "decisões pendentes: N (fora do lote, ver relatório final)" — esses itens nunca entram no lote, nem em cluster.
+
+Existe skill local em `.claude/skills/` com nome igual/equivalente a uma skill do plugin (`loopteam-core`, `adapters`, `tool-capture`, `verify-signature`) → avise em 1 linha "skill local 'X' duplica a do plugin — remova para não pagar 2x" e use APENAS a versão do plugin nesta execução.
 
 ## UI barata (verify-signature)
 
@@ -24,6 +26,7 @@ Lote > 8 itens → Lead PODE particionar em até 3 agentes de cluster (teto duro
 - Itens ligados pela mesma cadeia `dep:` nunca se separam em clusters diferentes — vão juntos, na ordem da cadeia.
 - Item de decisão humana (verbo tipo "reavaliar"/"decidir"/"planejar" sem entregável executável) não entra em cluster nenhum — fica fora do lote, vira pergunta agrupada no relatório final.
 - Spawn concorrente dos agentes de cluster, aguardar todos, nunca poll. Lead consolida: revisa o reporte item a item de cada cluster antes de marcar qualquer estado no BRIEFING — agente propõe, Lead confirma. Reporte de agente com prova genérica repetida em ≥3 itens (ex.: "build+tsc limpos" colada em todo item do cluster, sem ecoar o critério de cada um) = Lead NÃO consolida — devolve o cluster inteiro pro agente reverificar item a item, prova ecoando o critério específico de cada um, antes de marcar qualquer estado.
+- Agente com status "finished" que não entrega reporte → Lead pede status UMA vez; sem resposta, Lead NUNCA fica esperando indefinidamente — coleta o resultado direto do filesystem (`git status`/`git diff` dos arquivos do cluster), verifica item a item contra o critério de cada um como se fosse o reporte, e anota no relatório final "cluster X: consolidado via filesystem (agente não reportou)". Run sempre termina.
 
 Lote ≤ 8 itens → sem cluster, loop sequencial normal (seção abaixo).
 
