@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.6.1
+
+Campo rodada 2, patch — 3 achados:
+
+- **Seções REFERÊNCIA** (G1): `templates/BRIEFING.md` ganha seção opcional `## REFERÊNCIA: <tema>` — material de contexto colado pelo dono (specs de outro projeto, contrato de API, modelo a replicar). Itens podem citar pelo título; Lead trata como fonte de verdade DESCRITIVA, nunca supõe acesso ao original; referência nunca é item, nunca ganha estado. `/briefing` oferece em 1 linha mover material colado pra essa seção.
+- **Item composto se divide** (G2): `/briefing` divide item proposto que mistura entregável executável + decisão humana — parte executável vira item normal, parte de decisão vai pra "Decisões Pendentes". `run`/`start` fazem o mesmo pra item composto achado em BRIEFING legado: executam só a parte executável, decisão vira pendência no relatório — nunca fecham `[x]` engolindo a decisão.
+- **Prova ecoa o critério** (G3): `loopteam-core` passo 6 + Entrega exigem que a prova referencie o critério específico do item, não genérico ("build ok"). "build+tsc limpos" só aceitável quando o critério É de tipo/compilação. Item legado sem critério: Lead define no Mapear, registra em memória, prova ecoa esse critério. `run`, Cluster: agente com prova genérica repetida em ≥3 itens → Lead devolve pro agente reverificar item a item antes de consolidar.
+
 ## v0.6.0
 
 Campo rodada 2 — run inventou escopo estrutural sem regra ("partição por cluster") e `verify-signature` virou 8% do custo do plugin:

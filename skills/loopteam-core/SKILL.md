@@ -23,7 +23,7 @@ Lead de time interno. Lead julga/roteia/revisa, nunca coda rotina. Devs = subage
 3. **Julgar** (silencioso): compara, escolhe ou funde, aplica. Trade-off em ≤1 linha só se relevante pro dono decidir.
 4. **Verificar**: roda critério do passo 1, quantitativo, até 5 tentativas. `mode: consultant`: sem execução própria — critério é a resposta do dono ("funcionou" = passa; qualquer outra coisa = falha). Item de UI: supervisionado → carregar `verify-signature` inteira aqui; run → usa só o resumo operacional já injetado por `run.md` (skill inteira não recarrega por item). Sem `docs/SIGNATURE.md`, pule sem avisar.
 5. **Falha**: 1ª → 2ª melhor solução julgada. 2ª → abordagem NOVA, nunca reciclada. 3ª: supervisionado → PARA, escala 3 linhas (o que travou / o que foi tentado / 2 saídas com custo cada), trava dura, espera resposta; run → marca `[!]` travado com as mesmas 3 linhas na memória, segue pro próximo item. Sem 4ª tentativa sem aprovação explícita.
-6. **Registrar**: prova executada e completa → `[x]`. `mode: consultant` sem "funcionou", ou prova estática com critério pendente de ambiente → `[?]` com o que falta em 1 linha — nunca `[x]`, nunca `[ ]`. 3ª falha → `[!]` (ver passo 5). Decisão/falha sempre em memória. Sessão pesada: supervisionado → 1 linha após o item sugerindo `/clear`; run → acumula o aviso pro relatório final (a cada 2-3 itens fechados).
+6. **Registrar**: prova executada e completa → `[x]`. `mode: consultant` sem "funcionou", ou prova estática com critério pendente de ambiente → `[?]` com o que falta em 1 linha — nunca `[x]`, nunca `[ ]`. 3ª falha → `[!]` (ver passo 5). A linha de prova DEVE referenciar (ecoar) o critério específico do item — "pipeline: 4 transições clicadas em dev, estado persiste", nunca genérico tipo "build ok". "build+tsc limpos" só é prova aceitável quando o critério do item É de tipo/compilação; qualquer outro critério exige prova que cite esse critério. Item de BRIEFING legado sem critério mensurável embutido no texto: o Lead define o critério já no passo 1 (Mapear), registra em `.loopteam/memory/DECISIONS.md`, e a prova aqui ecoa ESSE critério. Decisão/falha sempre em memória. Sessão pesada: supervisionado → 1 linha após o item sugerindo `/clear`; run → acumula o aviso pro relatório final (a cada 2-3 itens fechados).
 
 ## Roteamento
 
@@ -39,7 +39,7 @@ Fragmento, zero filler, zero preâmbulo. Código, comando, path, erro sempre exa
 
 ## Entrega (modo supervisionado)
 
-≤8 linhas antes do código: código → prova (1 linha, TIPO explícito: "prova: executada (12/12 testes)" ou "prova: estática (grep/leitura — critério real pendente de ambiente)") → `[x]`/`[?]`/`[!]` item → "roteado: X" (se semântico) → exceção signature (se houve) → próximo passo. Prova estática nunca fecha `[x]`. Proibido: raciocínio do time, opções descartadas, narração de subagente. Modo run usa relatório único — formato em `run.md`, não este.
+≤8 linhas antes do código: código → prova (1 linha, TIPO explícito + critério ecoado: "prova: executada (pipeline: 4 transições clicadas em dev, estado persiste)" ou "prova: estática (grep/leitura — critério real pendente de ambiente)") → `[x]`/`[?]`/`[!]` item → "roteado: X" (se semântico) → exceção signature (se houve) → próximo passo. Prova genérica ("build ok" sem citar o critério do item) não fecha nada, mesma trava de prova estática. Proibido: raciocínio do time, opções descartadas, narração de subagente. Modo run usa relatório único — formato em `run.md`, não este.
 
 ## Após entrega (modo supervisionado)
 

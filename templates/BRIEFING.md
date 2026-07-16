@@ -36,6 +36,20 @@ um comando que retorna X, um endpoint que responde Y. Nunca "funciona bem".
 
 - [ ] <item de exemplo — apague ao preencher> — pronto quando: <critério mensurável>
 
+## REFERÊNCIA: <tema>
+
+<!--
+Opcional, quantas seções REFERÊNCIA: <tema> forem necessárias. Material de
+contexto colado pelo dono (specs de outro projeto, contrato de API, modelo a
+replicar) — cola aqui tal como veio, sem editar.
+
+Regras: itens do Escopo podem citar a referência pelo título ("conforme
+REFERÊNCIA: <tema>"). O Lead trata o conteúdo como fonte de verdade
+DESCRITIVA — usa só o que está escrito aqui, nunca supõe acesso ao original
+(arquivo, API, repo). Referência NUNCA é item, nunca ganha estado
+[ ]/[x]/[?]/[!].
+-->
+
 ## Decisões Pendentes
 
 <!--

@@ -23,13 +23,15 @@ Lote > 8 itens → Lead PODE particionar em até 3 agentes de cluster (teto duro
 - Prova é POR ITEM, nunca por cluster — "build ok" do cluster inteiro não fecha nada; cada item roda e reporta seu próprio critério.
 - Itens ligados pela mesma cadeia `dep:` nunca se separam em clusters diferentes — vão juntos, na ordem da cadeia.
 - Item de decisão humana (verbo tipo "reavaliar"/"decidir"/"planejar" sem entregável executável) não entra em cluster nenhum — fica fora do lote, vira pergunta agrupada no relatório final.
-- Spawn concorrente dos agentes de cluster, aguardar todos, nunca poll. Lead consolida: revisa o reporte item a item de cada cluster antes de marcar qualquer estado no BRIEFING — agente propõe, Lead confirma.
+- Spawn concorrente dos agentes de cluster, aguardar todos, nunca poll. Lead consolida: revisa o reporte item a item de cada cluster antes de marcar qualquer estado no BRIEFING — agente propõe, Lead confirma. Reporte de agente com prova genérica repetida em ≥3 itens (ex.: "build+tsc limpos" colada em todo item do cluster, sem ecoar o critério de cada um) = Lead NÃO consolida — devolve o cluster inteiro pro agente reverificar item a item, prova ecoando o critério específico de cada um, antes de marcar qualquer estado.
 
 Lote ≤ 8 itens → sem cluster, loop sequencial normal (seção abaixo).
 
 ## Loop (sem cluster, sem parar entre itens)
 
 Para cada item: roteiro completo de `loopteam-core` (Memória → Mapear → Executar → Julgar → Verificar → Falha), regras de modo run já embutidas lá — escopo extra vira sugestão anotada, critério inverificável vira `[?]` e segue, 3ª falha vira `[!]` e segue, `mode: consultant` gera guia e marca `[?]`. As DUAS únicas paradas duras: trava destrutiva de extensão `executor` (mostra verbatim, espera OK) e conflito global de SIGNATURE (para, 3 linhas, espera resposta) — resolvida a parada, o loop retoma do próximo item.
+
+Item composto em BRIEFING legado (escrito à mão, mistura entregável executável + decisão humana no mesmo texto) → executa SÓ a parte executável, com prova própria; a parte de decisão vira linha em "Decisões Pendentes" do relatório final, nunca vira `[x]` junto — fechar `[x]` engolindo a parte de decisão é proibido.
 
 ## Relatório final (única saída no chat)
 

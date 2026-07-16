@@ -29,6 +29,8 @@ Argumento (`$ARGUMENTS`) → trate como o item; sem match exato, assuma o mais p
 
 Roteiro completo de `loopteam-core` (Memória → Mapear → Executar por porte → Julgar → Verificar → Falha se houver → Registrar), formato de ENTREGA de lá.
 
+Item composto em BRIEFING legado (escrito à mão, mistura entregável executável + decisão humana no mesmo texto) → executa SÓ a parte executável; a parte de decisão vira linha nova em "Decisões Pendentes" do BRIEFING (nunca fecha `[x]` engolindo a decisão) e entra na Entrega como "decisão pendente registrada: <texto>".
+
 ## Fim
 
 Só "Aprovar, ajustar ou descartar?". Sugestão de adapter (1 linha, só se fizer diferença real) vai no fim, nunca antes.
