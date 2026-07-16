@@ -4,7 +4,7 @@ disable-model-invocation: true
 argument-hint: "[item ou vazio]"
 ---
 
-**Gate (1ª linha, antes de tudo)**: leia `.loopteam/state`. `off` → responda exatamente "loopteam off — use `/loopteam:on`" e PARE, nada mais roda. Ausente/`on` → segue. Cobertura dupla com o gate de `loopteam-core` — não pule por já ter sido checado antes.
+**Gate (1ª linha, antes de tudo)**: leia `.loopteam/state`. `off` → responda exatamente "loopteam off — use `/loopteam:on`" e PARE, nada mais roda. Ausente/`on` → declare em 1 linha o que este comando vai fazer (ex.: "Lendo docs/BRIEFING.md — N itens abertos, começando por...") e segue. Cobertura dupla com o gate de `loopteam-core` — não pule por já ter sido checado antes.
 
 Carregue `loopteam-core`, `adapters`, `tool-capture` (e `verify-signature` se houver UI no escopo).
 
@@ -15,7 +15,7 @@ Sincronize `.loopteam/pending` com os itens `[?]` do BRIEFING (adiciona novo com
 ## Checks (gate já feito acima + fase, ≤3 linhas somadas)
 
 **Fase do projeto** (classifique 1 linha interna, nunca no chat, pelos sinais: nº arquivos de código, presença de teste, `.loopteam/` já existe, % `[x]` no BRIEFING):
-- **INÍCIO** (repo vazio/scaffold): sem `docs/BRIEFING.md` ainda → rode a entrevista de `briefing` agora, sem fan-out até existir base real.
+- **INÍCIO** (repo vazio/scaffold): sem `docs/BRIEFING.md` ainda → não ofereça só "criar"; mostre o mini-mapa: "1) `/briefing` cria o escopo (só escreve o arquivo, não executa nada). 2) `/loopteam:start` lê o BRIEFING e trabalha os itens. 3) `/loopteam:on`/`off` liga/desliga, `/loopteam <tarefa>` roda algo avulso." e instrua a rodar `/briefing` agora. Primeiro contato nunca termina em beco. Sem fan-out até existir base real.
 - **MEIO** (código real, sem LoopTeam prévio): rode `tool-capture` (aprovação 1-a-1 se `executor`, lote se `consultant`, ver `tool-capture`). Mapeie via `adapters` e proponha `docs/BRIEFING.md` rascunhado do código + entrevista curta de `briefing` pro que falta. UI presente → ofereça capturar `docs/SIGNATURE.md`, só grava com aprovação.
 - **FIM** (código maduro, `.loopteam/` já existia, ou BRIEFING quase todo `[x]`): manutenção — fan-out raro, verificação pesada.
 

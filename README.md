@@ -6,14 +6,22 @@ LoopTeam transforma qualquer sessão do Claude Code em um time de desenvolviment
 
 Fonte de verdade em arquivo, não em memória de conversa: `docs/BRIEFING.md` é o escopo em checklist.
 
-## Install
+## Primeiros 5 minutos
 
 ```
 /plugin marketplace add {{user}}/loopteam
 /plugin install loopteam@loopteam
 ```
 
-Uso: `/loopteam:start`.
+```
+install → /briefing (até 4 perguntas sobre a IDEIA)
+        → você responde
+        → "aprovar briefing" (nada executa antes disso)
+        → /loopteam:start (trabalha os itens, um por vez)
+        → você responde: aprovar / ajustar / descartar
+```
+
+Perdido? `/loopteam:help` mostra o mapa em 3 frases. Detalhes técnicos ficam no resto deste README.
 
 ## Como funciona
 
@@ -69,7 +77,12 @@ dono: aprovar / ajustar / descartar / reroteia: X / funcionou / continua o brief
 | `/loopteam:on` | Ativa o LoopTeam neste projeto (`.loopteam/state` = `on`). Padrão após install. |
 | `/loopteam:off` | Desativa — Claude age normal até o próximo `on`. Bloqueia inclusive `/loopteam:start` e `/loopteam`. |
 | `/loopteam <tarefa>` | Modo ad-hoc — roda UMA tarefa avulsa pelo roteiro completo, sem tocar o BRIEFING. Também respeita o gate `off`. |
-| `/briefing` | Cria/continua `docs/BRIEFING.md` — só aqui o time ainda conversa livremente, porque não há código pra entregar ainda. |
+| `/briefing` | Cria/continua `docs/BRIEFING.md` — só aqui o time ainda conversa livremente, porque não há código pra entregar ainda. Proposta: nada executa até "aprovar briefing". |
+| `/loopteam:help` | Mapa mental em 3 frases + esta tabela, direto no chat. |
+
+## Sessão nova é barata
+
+Estado do LoopTeam é 100% arquivo — `.loopteam/` + `docs/BRIEFING.md` — nunca memória de conversa. Depois de 1-2 itens fechados, `/clear` e `/loopteam:start` de novo é o modo recomendado: nada se perde, e a sessão não estoura contexto. O próprio `loopteam-core` sugere isso quando a sessão já está longa.
 
 ## Exemplo de BRIEFING preenchido
 
